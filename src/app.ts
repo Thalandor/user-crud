@@ -1,31 +1,23 @@
 import express from "express";
 import { router } from "./routes";
-import pgPromise from "pg-promise";
-import dotenv from "dotenv";
 
-dotenv.config();
+export default class App {
+  #app: express.Application;
 
-const start = async () => {
-  const app = express();
-  const port = 3000;
+  constructor() {
+    this.#app = express();
+  }
 
-  const pgp = pgPromise();
-  const dbConfig = {
-    host: process.env.DB_HOST || "",
-    port: parseInt(process.env.DB_PORT, 10) || 5432,
-    database: process.env.DB_NAME || "",
-    user: process.env.DB_USER || "",
-    password: process.env.DB_PASSWORD || "",
+  start = async () => {
+    const port = 3000;
+
+    this.#app.use(express.json());
+    this.#app.use("/", router);
+
+    this.#app.listen(port, () => {
+      return console.log(
+        `Express server is listening at http://localhost:${port} 🚀`
+      );
+    });
   };
-  const db = pgp(dbConfig);
-
-  app.use("/", router);
-
-  app.listen(port, () => {
-    return console.log(
-      `Express server is listening at http://localhost:${port} 🚀`
-    );
-  });
-};
-
-start();
+}
