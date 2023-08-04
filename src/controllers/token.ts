@@ -1,17 +1,13 @@
 import { Request, Response } from "express";
-import { User } from "./users";
-import { db } from "../db/db";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import * as usersRepository from "../repositories/users";
 
 export const Login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
     // Check if the user with the given email exists
-    const user: User = await db.oneOrNone(
-      "SELECT * FROM users WHERE email = $1",
-      email
-    );
+    const user = await usersRepository.getUserByEmail(email);
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
