@@ -33,8 +33,11 @@ export const Create = async (req: Request, res: Response) => {
 
 export const Read = async (req: Request, res: Response) => {
   try {
-    // TODO: Fetch all users from the database
-    const users: User[] = await db.any("SELECT * FROM users");
+    const { id } = req.params;
+    const users: User[] = await db.one(
+      "SELECT id, name, email FROM users WHERE id = $1",
+      [id]
+    );
     res.json(users);
   } catch (error) {
     console.error("Error while fetching users:", error);
@@ -44,20 +47,25 @@ export const Read = async (req: Request, res: Response) => {
 
 export const Update = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.id;
-    const { name, email } = req.body;
+    const { id } = req.params;
+    const { name, email, password } = req.body;
+
+    // Get current user
+    const user: User = await db.one(
+      "SELECT id, name, email, password FROM users WHERE id = $1",
+      [id]
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
 
     // TODO: Input validation (check if name and email are provided and meet your requirements)
 
-    // TODO: Update the user in the database
-    const updatedUser: User = await db.oneOrNone(
-      "UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING id, name, email",
-      [name, email, userId]
+    const updatedUser: User = await db.one(
+      "UPDATE users SET name = $1, email = $2 , password = $3 WHERE id = $4 RETURNING id, name, email",
+      [name, email, password, id]
     );
-
-    if (!updatedUser) {
-      return res.status(404).json({ error: "User not found." });
-    }
 
     res.json(updatedUser);
   } catch (error) {
@@ -68,16 +76,13 @@ export const Update = async (req: Request, res: Response) => {
 
 export const Delete = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.id;
+    const { id } = req.params;
 
     // TODO: Delete the user from the database
-    const deletedUser = await db.result(
-      "DELETE FROM users WHERE id = $1",
-      userId
-    );
+    const user = await db.result("DELETE FROM users WHERE id = $1", id);
 
     // Check if the user was deleted successfully
-    if (deletedUser.rowCount === 0) {
+    if (user.rowCount === 0) {
       return res.status(404).json({ error: "User not found." });
     }
 
