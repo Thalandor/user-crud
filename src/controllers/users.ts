@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as bcrypt from "bcrypt";
 import { db } from "../db/db";
 
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
