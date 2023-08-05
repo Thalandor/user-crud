@@ -13,7 +13,6 @@ export const createUser = async (
   password: string
 ): Promise<User> => {
   try {
-    // TODO: Insert the new user into the database
     const newUser: User = await db.one(
       "INSERT INTO users(name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email",
       [name, email, password]
@@ -28,7 +27,6 @@ export const createUser = async (
 
 export const getUserById = async (id: string): Promise<User | null> => {
   try {
-    // TODO: Fetch the user by their ID from the database
     const user: User = await db.oneOrNone(
       "SELECT id, name, email FROM users WHERE id = $1",
       [id]
@@ -58,9 +56,6 @@ export const updateUser = async (
       return null;
     }
 
-    // TODO: Input validation (check if name and email are provided and meet your requirements)
-
-    // TODO: Update the user in the database
     const updatedUser: User = await db.one(
       "UPDATE users SET name = $1, email = $2 , password = $3 WHERE id = $4 RETURNING id, name, email",
       [name, email, password, id]
@@ -75,7 +70,6 @@ export const updateUser = async (
 
 export const deleteUser = async (id: string): Promise<boolean> => {
   try {
-    // TODO: Delete the user from the database
     const result = await db.result("DELETE FROM users WHERE id = $1", id);
 
     // Check if the user was deleted successfully

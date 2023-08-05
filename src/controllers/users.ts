@@ -4,11 +4,9 @@ import bcrypt from "bcrypt";
 
 const SALT = 10;
 
-export const Create = async (req: Request, res: Response) => {
+export const create = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
-
-    // TODO: Input validation (check if name, email, and password are provided and meet your requirements)
     // Hash the password before storing it in the database
     const hashedPassword = await bcrypt.hash(password, SALT);
     const newUser = await usersRepository.createUser(
@@ -24,7 +22,7 @@ export const Create = async (req: Request, res: Response) => {
   }
 };
 
-export const Read = async (req: Request, res: Response) => {
+export const read = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -41,7 +39,7 @@ export const Read = async (req: Request, res: Response) => {
   }
 };
 
-export const Update = async (req: Request, res: Response) => {
+export const update = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, email, password } = req.body;
@@ -65,7 +63,7 @@ export const Update = async (req: Request, res: Response) => {
   }
 };
 
-export const Delete = async (req: Request, res: Response) => {
+export const remove = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
