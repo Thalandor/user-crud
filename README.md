@@ -26,7 +26,7 @@ Last but not least ensure you have the database server started. To facilitate th
 
 This command not only starts a postgres database, but also inserts a user directly so the user can start to work directly with the API.
 
-**A user needs to be created previously on the database to be able to work with the api as every endpoint, except login requires to be authenticated**. It's recommended using the docker compose previously mentioned or execute the following insert statement:
+**A user needs to be created previously on the database to be able to work with the api as every endpoint, except login requires to be authenticated**. It's recommended using the docker compose previously mentioned, as an alternative you can execute the following insert statement:
 
     INSERT INTO users (name, email, password) VALUES ('admin', 'admin@admin.com', '$2b$10$PqLV.OPh6p.GAqoUP7g0X.DhRWPPtirlhaU7uWjkvED9rMovFtsd2');
 
