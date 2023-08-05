@@ -25,10 +25,15 @@ export const createUser = async (
   }
 };
 
-export const getUserById = async (id: string): Promise<User | null> => {
+export const getUserById = async (
+  id: string,
+  options: { getPassword?: boolean } = { getPassword: false }
+): Promise<User | null> => {
   try {
     const user: User = await db.oneOrNone(
-      "SELECT id, name, email FROM users WHERE id = $1",
+      options.getPassword
+        ? "SELECT id, name, email, password FROM users WHERE id = $1"
+        : "SELECT id, name, email FROM users WHERE id = $1",
       [id]
     );
 
@@ -42,7 +47,7 @@ export const getUserById = async (id: string): Promise<User | null> => {
 export const getUserByEmail = async (email: string): Promise<User | null> => {
   try {
     const user: User = await db.oneOrNone(
-      "SELECT id, name, email FROM users WHERE email = $1",
+      "SELECT id, name, email, password FROM users WHERE email = $1",
       email
     );
     return user;

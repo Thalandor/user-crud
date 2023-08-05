@@ -75,7 +75,9 @@ export const update = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, email, password } = req.body;
-    const originalUser = await usersRepository.getUserById(id);
+    const originalUser = await usersRepository.getUserById(id, {
+      getPassword: true,
+    });
     if (!originalUser) {
       return res.status(404).json({ errors: "User not found." });
     }

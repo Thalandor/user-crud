@@ -97,7 +97,7 @@ describe("Read Endpoint", () => {
       email: "email1@email1.com",
     });
     const response = await request(expressApp)
-      .get("/users/123")
+      .get("/users/1")
       .set("Authorization", `Bearer ${token}`);
     expect(response.body).toMatchObject({
       id: 1,

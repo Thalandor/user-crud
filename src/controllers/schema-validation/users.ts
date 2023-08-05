@@ -38,6 +38,19 @@ export const updateSchema: Schema = {
     exists: true,
     isNumeric: true,
   },
+  customFields: {
+    custom: {
+      options: (_, { req }) => {
+        const { name, email, password } = req.body;
+        if (!name && !email && !password) {
+          throw new Error(
+            "At least one of 'name', 'email', or 'password' must be provided."
+          );
+        }
+        return true;
+      },
+    },
+  },
   name: {
     optional: true,
     isLength: {
