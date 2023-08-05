@@ -19,7 +19,7 @@ export const Login = async (req: Request, res: Response) => {
     // Check if the user with the given email exists
     const user = await usersRepository.getUserByEmail(email);
     if (!user) {
-      return res.status(401).json({ error: "Invalid email or password." });
+      return res.status(401).json({ errors: "Invalid email or password." });
     }
     // Compare the provided password with the stored hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);

@@ -9,13 +9,13 @@ export const validateToken = (
   const token = req.header("Authorization")?.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized. Token not found." });
+    return res.status(401).json({ errors: "Unauthorized. Token not found." });
   }
 
   try {
     jwt.verify(token, process.env.JWT_SECRET_KEY) as { userId: string };
     next();
   } catch (error) {
-    return res.status(401).json({ error: "Unauthorized. Invalid token." });
+    return res.status(401).json({ errors: "Unauthorized. Invalid token." });
   }
 };
