@@ -67,13 +67,17 @@ export const updateSchema: Schema = {
 export const readSchema: Schema = {
   id: {
     exists: true,
-    isNumeric: true,
+    isNumeric: {
+      errorMessage: "Id needs to be a numeric value",
+    },
   },
 };
 
 export const removeSchema: Schema = {
   id: {
     exists: true,
-    isNumeric: true,
+    isNumeric: {
+      errorMessage: "Id needs to be a numeric value",
+    },
   },
 };
