@@ -2,13 +2,18 @@ import { Schema } from "express-validator";
 
 export const createSchema: Schema = {
   name: {
-    notEmpty: true,
+    notEmpty: {
+      errorMessage: "Name is mandatory",
+    },
     isLength: {
       errorMessage: "Name should be less than 255 characters",
       options: { max: 255 },
     },
   },
   email: {
+    notEmpty: {
+      errorMessage: "Email is mandatory",
+    },
     isEmail: { errorMessage: "Email is not a valid email" },
     isLength: {
       errorMessage:
@@ -17,6 +22,9 @@ export const createSchema: Schema = {
     },
   },
   password: {
+    notEmpty: {
+      errorMessage: "Password is mandatory",
+    },
     isLength: {
       options: { min: 8, max: 50 },
       errorMessage:

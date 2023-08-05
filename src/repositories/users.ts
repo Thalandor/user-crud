@@ -21,7 +21,7 @@ export const createUser = async (
     return newUser;
   } catch (error) {
     console.error("Error during user creation:", error);
-    throw new Error("Something went wrong.");
+    throw new Error(error.message);
   }
 };
 
@@ -35,7 +35,7 @@ export const getUserById = async (id: string): Promise<User | null> => {
     return user;
   } catch (error) {
     console.error("Error while fetching user:", error);
-    throw new Error("Something went wrong.");
+    throw new Error(error.message);
   }
 };
 
@@ -64,7 +64,7 @@ export const updateUser = async (
     return updatedUser;
   } catch (error) {
     console.error("Error during user update:", error);
-    throw new Error("Something went wrong.");
+    throw new Error(error.message);
   }
 };
 
@@ -76,7 +76,7 @@ export const deleteUser = async (id: string): Promise<boolean> => {
     return result.rowCount > 0;
   } catch (error) {
     console.error("Error during user deletion:", error);
-    throw new Error("Something went wrong.");
+    throw new Error(error.message);
   }
 };
 
@@ -90,6 +90,6 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
     return user;
   } catch (error) {
     console.error("Error while fetching user:", error);
-    throw new Error("Something went wrong.");
+    throw new Error(error.message);
   }
 };

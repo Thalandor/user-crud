@@ -18,7 +18,7 @@ export const Login = async (req: Request, res: Response) => {
     // Compare the provided password with the stored hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid email or password." });
+      return res.status(401).json({ errors: "Invalid email or password." });
     }
 
     // Issue a JWT token for authentication
@@ -29,6 +29,6 @@ export const Login = async (req: Request, res: Response) => {
     res.json({ token });
   } catch (error) {
     console.error("Error during user login:", error);
-    res.status(500).json({ error: "Something went wrong." });
+    res.status(500).json({ errors: error.message });
   }
 };
