@@ -2,9 +2,12 @@ import { Request, Response } from "express";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import * as usersRepository from "../repositories/users";
+import { validationResult } from "express-validator";
 
 export const Login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
+  const errors = validationResult(req);
+  console.log("errors: :", errors);
   try {
     // Check if the user with the given email exists
     const user = await usersRepository.getUserByEmail(email);
