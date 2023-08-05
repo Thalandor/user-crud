@@ -3,7 +3,6 @@ import { router } from "./routes";
 
 export default class App {
   #app: express.Application;
-  #server: any;
 
   constructor() {
     this.#app = express();
@@ -14,20 +13,16 @@ export default class App {
   };
 
   start = async () => {
-    const port = process.env.EXPRESS_PORT;
-
     this.#app.use(express.json());
     this.#app.use("/", router);
 
-    this.#server = this.#app.listen(port, () => {
-      return console.log(
-        `Express server is listening at http://localhost:${port} 🚀`
-      );
-    });
-    this.#server;
-  };
-
-  close = () => {
-    this.#server.close();
+    if (process.env.NODE_ENV !== "test") {
+      const port = process.env.EXPRESS_PORT;
+      this.#app.listen(port, () => {
+        return console.log(
+          `Express server is listening at http://localhost:${port} 🚀`
+        );
+      });
+    }
   };
 }

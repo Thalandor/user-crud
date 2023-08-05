@@ -1,73 +1,204 @@
-// import request from "supertest";
-// import app from "../app";
-// import App from "../app";
-// import { User } from "../repositories/users";
-// import jwt from "jsonwebtoken";
+import request from "supertest";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import App from "../app";
+import * as usersRepository from "../repositories/users";
 
-// export const generateValidToken = (user: User): string => {
-//   const payload = { userId: user.id };
-//   return jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
-// };
+jest.mock("../repositories/users", () => ({
+  getUserByEmail: jest.fn(),
+  getUserById: jest.fn(),
+  createUser: jest.fn(),
+  updateUser: jest.fn(),
 
-// describe("User Endpoints", () => {
-//   let createdUserId: string; // To store the id of the user created in the test
+  deleteUser: jest.fn(),
+}));
 
-//   let app: App;
-//   let authToken: string; // To store the generated token
+const generateToken = () => {
+  const secretKey = process.env.JWT_SECRET_KEY;
+  const token = jwt.sign({ test: "test" }, secretKey, { expiresIn: "1h" });
+  return token;
+};
 
-//   beforeAll(() => {
-//     app = new App();
-//     authToken = generateValidToken({ id: "test-user-id" }); // Use the ID of the user you want to simulate in the token
-//   });
+describe("Create Endpoint", () => {
+  let app: App;
+  let expressApp: Express.Application;
+  let token: string;
 
-//   it("should create a new user", async () => {
-//     const response = await request(app).post("/users").send({
-//       name: "John Doe",
-//       email: "john@example.com",
-//       password: "securepass",
-//     });
+  beforeAll(async () => {
+    app = new App();
+    await app.start();
+    expressApp = app.getApp();
+    token = generateToken();
+  });
 
-//     expect(response.status).toBe(201);
-//     expect(response.body).toHaveProperty("id");
-//     createdUserId = response.body.id;
-//   });
+  it("should create a user", async () => {
+    const mockedCreateUser = usersRepository.createUser as jest.Mock;
+    mockedCreateUser.mockImplementation(async (name, email, password) => {
+      const newUser = {
+        id: 1,
+        name,
+        email,
+        password,
+      };
+      return newUser;
+    });
+    const response = await request(expressApp)
+      .post("/users")
+      .send({
+        name: "test1",
+        email: "email1@email1.com",
+        password: "password1",
+      })
+      .set("Authorization", `Bearer ${token}`);
 
-//   it("should get a user by id", async () => {
-//     const response = await request(app).get(`/users/${createdUserId}`);
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      id: 1,
+      name: "test1",
+      email: "email1@email1.com",
+    });
+  });
 
-//     expect(response.status).toBe(200);
-//     expect(response.body).toHaveProperty("id", createdUserId);
-//     expect(response.body).toHaveProperty("name", "John Doe");
-//     expect(response.body).toHaveProperty("email", "john@example.com");
-//   });
+  it("should fail if user already created", async () => {
+    const mockedGetUserByEmail = usersRepository.getUserByEmail as jest.Mock;
+    mockedGetUserByEmail.mockReturnValueOnce({
+      name: "test1",
+      email: "email1@email1.com",
+      password: "password1",
+    });
+    const response = await request(expressApp)
+      .post("/users")
+      .send({
+        name: "test1",
+        email: "email1@email1.com",
+        password: "password1",
+      })
+      .set("Authorization", `Bearer ${token}`);
 
-//   it("should update a user", async () => {
-//     const response = await request(app).patch(`/users/${createdUserId}`).send({
-//       name: "Updated Name",
-//       email: "updated@example.com",
-//       password: "newpassword",
-//     });
+    expect(response.status).toBe(404);
+  });
+});
 
-//     expect(response.status).toBe(200);
-//     expect(response.body).toHaveProperty("id", createdUserId);
-//     expect(response.body).toHaveProperty("name", "Updated Name");
-//     expect(response.body).toHaveProperty("email", "updated@example.com");
-//   });
+describe("Read Endpoint", () => {
+  let app: App;
+  let expressApp: Express.Application;
+  let token: string;
 
-//   it("should delete a user", async () => {
-//     const response = await request(app).delete(`/users/${createdUserId}`);
+  beforeAll(async () => {
+    app = new App();
+    await app.start();
+    expressApp = app.getApp();
+    token = generateToken();
+  });
 
-//     expect(response.status).toBe(200);
-//     expect(response.body).toHaveProperty(
-//       "message",
-//       "User deleted successfully."
-//     );
-//   });
+  it("should read a user", async () => {
+    const mockedGetUserById = usersRepository.getUserById as jest.Mock;
+    mockedGetUserById.mockReturnValueOnce({
+      id: 1,
+      name: "test1",
+      email: "email1@email1.com",
+    });
+    const response = await request(expressApp)
+      .get("/users/123")
+      .set("Authorization", `Bearer ${token}`);
+    expect(response.body).toMatchObject({
+      id: 1,
+      name: "test1",
+      email: "email1@email1.com",
+    });
+    expect(response.status).toBe(200);
+  });
 
-//   it("should not get a user with an invalid id", async () => {
-//     const response = await request(app).get("/users/invalidId");
+  it("should return an error if user does not exists", async () => {
+    const mockedGetUserById = usersRepository.getUserById as jest.Mock;
+    mockedGetUserById.mockReturnValueOnce(undefined);
+    const response = await request(expressApp)
+      .get("/users/1")
+      .set("Authorization", `Bearer ${token}`);
+    expect(response.status).toBe(404);
+  });
+});
 
-//     expect(response.status).toBe(404);
-//     expect(response.body).toHaveProperty("errors", "User not found.");
-//   });
-// });
+describe("Update Endpoint", () => {
+  let app: App;
+  let expressApp: Express.Application;
+  let token: string;
+
+  beforeAll(async () => {
+    app = new App();
+    await app.start();
+    expressApp = app.getApp();
+    token = generateToken();
+  });
+
+  it("should update a user", async () => {
+    const mockedGetUserById = usersRepository.getUserById as jest.Mock;
+    mockedGetUserById.mockReturnValueOnce({
+      id: 1,
+      name: "test1",
+      email: "email1@email1.com",
+    });
+    const mockedUpdateUser = usersRepository.updateUser as jest.Mock;
+    mockedUpdateUser.mockImplementationOnce(
+      async (id, name, email, password) => {
+        const updatedUser = {
+          id: id,
+          name,
+          email,
+          password,
+        };
+        return updatedUser;
+      }
+    );
+    const response = await request(expressApp)
+      .patch("/users/1")
+      .send({ name: "new name" })
+      .set("Authorization", `Bearer ${token}`);
+    expect(response.body).toMatchObject({
+      id: "1",
+      name: "new name",
+    });
+    expect(response.status).toBe(200);
+  });
+
+  it("should return an error if user does not exists", async () => {
+    const mockedGetUserById = usersRepository.getUserById as jest.Mock;
+    mockedGetUserById.mockReturnValueOnce(undefined);
+    const response = await request(expressApp)
+      .patch("/users/1")
+      .send({ name: "new name" })
+      .set("Authorization", `Bearer ${token}`);
+    expect(response.status).toBe(404);
+  });
+});
+
+describe("Delete Endpoint", () => {
+  let app: App;
+  let expressApp: Express.Application;
+  let token: string;
+
+  beforeAll(async () => {
+    app = new App();
+    await app.start();
+    expressApp = app.getApp();
+    token = generateToken();
+  });
+
+  it("should delete a user", async () => {
+    const mockedDeleteUser = usersRepository.deleteUser as jest.Mock;
+    mockedDeleteUser.mockReturnValueOnce(true);
+    const response = await request(expressApp)
+      .delete("/users/1")
+      .set("Authorization", `Bearer ${token}`);
+    expect(response.status).toBe(200);
+  });
+
+  it("should return an error if user does not exists", async () => {
+    const mockedDeleteUser = usersRepository.deleteUser as jest.Mock;
+    mockedDeleteUser.mockReturnValueOnce(false);
+    const response = await request(expressApp)
+      .delete("/users/1")
+      .set("Authorization", `Bearer ${token}`);
+    expect(response.status).toBe(404);
+  });
+});

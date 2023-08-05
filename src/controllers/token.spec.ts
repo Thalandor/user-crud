@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 jest.mock("../repositories/users", () => ({
   getUserByEmail: jest.fn().mockImplementation(async () => {
-    return { name: "hola", password: await bcrypt.hash("password1", 10) };
+    return { name: "testname", password: await bcrypt.hash("password1", 10) };
   }),
 }));
 
@@ -12,14 +12,10 @@ describe("Login Endpoint", () => {
   let app: App;
   let expressApp: Express.Application;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     app = new App();
-    app.start();
+    await app.start();
     expressApp = app.getApp();
-  });
-
-  afterAll(() => {
-    app.close();
   });
 
   it("should login and get a token", async () => {
