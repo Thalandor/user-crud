@@ -1,5 +1,4 @@
 import request from "supertest";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import App from "../app";
 import * as usersRepository from "../repositories/users";
@@ -9,7 +8,6 @@ jest.mock("../repositories/users", () => ({
   getUserById: jest.fn(),
   createUser: jest.fn(),
   updateUser: jest.fn(),
-
   deleteUser: jest.fn(),
 }));
 

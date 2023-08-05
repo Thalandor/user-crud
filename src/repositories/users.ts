@@ -39,23 +39,26 @@ export const getUserById = async (id: string): Promise<User | null> => {
   }
 };
 
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+  try {
+    const user: User = await db.oneOrNone(
+      "SELECT id, name, email FROM users WHERE email = $1",
+      email
+    );
+    return user;
+  } catch (error) {
+    console.error("Error while fetching user:", error);
+    throw new Error(error.message);
+  }
+};
+
 export const updateUser = async (
   id: string,
   name: string,
   email: string,
   password: string
-): Promise<User | null> => {
+): Promise<User> => {
   try {
-    // Get current user
-    const user: User = await db.oneOrNone(
-      "SELECT id, name, email, password FROM users WHERE id = $1",
-      [id]
-    );
-
-    if (!user) {
-      return null;
-    }
-
     const updatedUser: User = await db.one(
       "UPDATE users SET name = $1, email = $2 , password = $3 WHERE id = $4 RETURNING id, name, email",
       [name, email, password, id]
@@ -76,20 +79,6 @@ export const deleteUser = async (id: string): Promise<boolean> => {
     return result.rowCount > 0;
   } catch (error) {
     console.error("Error during user deletion:", error);
-    throw new Error(error.message);
-  }
-};
-
-export const getUserByEmail = async (email: string): Promise<User | null> => {
-  try {
-    // Fetch the user by their email from the database
-    const user: User = await db.oneOrNone(
-      "SELECT * FROM users WHERE email = $1",
-      email
-    );
-    return user;
-  } catch (error) {
-    console.error("Error while fetching user:", error);
     throw new Error(error.message);
   }
 };

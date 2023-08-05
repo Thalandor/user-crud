@@ -4,6 +4,17 @@ import bcrypt from "bcrypt";
 
 const SALT = 10;
 
+/**
+ * Create a new user.
+ *
+ * @param {Request} req - The Express request object.
+ * @param {string} req.body.name - The name of the new user (received in the request body).
+ * @param {string} req.body.email - The email of the new user (received in the request body).
+ * @param {string} req.body.password - The password of the new user (received in the request body).
+ * @param {Response} res - The Express response object.
+ * @returns {Promise<void>} The response containing the newly created user (id, name and email).
+ * @throws {Error} If there's an error during user creation.
+ */
 export const create = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
@@ -25,6 +36,15 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Read a user by ID.
+ *
+ * @param {Request} req - The Express request object.
+ * @param {Response} res - The Express response object.
+ * @param {string} req.params.id - The ID of the user to read (received in the request parameters).
+ * @returns {Promise<void>} The response containing the user(id,name and email) with the specified ID.
+ * @throws {Error} If there's an error while fetching the user.
+ */
 export const read = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -39,6 +59,18 @@ export const read = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Update a user by ID.
+ *
+ * @param {Request} req - The Express request object.
+ * @param {Response} res - The Express response object.
+ * @param {string} req.params.id - The ID of the user to update (received in the request parameters).
+ * @param {string} req.body.name - The updated name of the user (received in the request body).
+ * @param {string} req.body.email - The updated email of the user (received in the request body).
+ * @param {string} req.body.password - The updated password of the user (received in the request body).
+ * @returns {Promise<void>} The response containing the updated user(id, name and email).
+ * @throws {Error} If there's an error during user update.
+ */
 export const update = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -47,11 +79,12 @@ export const update = async (req: Request, res: Response) => {
     if (!originalUser) {
       return res.status(404).json({ errors: "User not found." });
     }
-    // Hash the password in case there is a new one or get the original one
+    // Hash the password in case there is a new one or use the original one
     const hashedPassword = password
       ? await bcrypt.hash(password, SALT)
       : originalUser.password;
-    console.log("hey dude");
+
+    // Update the user with the new info
     const updatedUser = await usersRepository.updateUser(
       id,
       name || originalUser.name,
@@ -65,6 +98,15 @@ export const update = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Remove a user by ID.
+ *
+ * @param {Request} req - The Express request object.
+ * @param {Response} res - The Express response object.
+ * @param {string} req.params.id - The ID of the user to remove (received in the request parameters).
+ * @returns {Promise<void>} The response indicating the success of the deletion.
+ * @throws {Error} If there's an error during user deletion.
+ */
 export const remove = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

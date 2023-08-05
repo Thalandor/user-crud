@@ -13,9 +13,13 @@ export default class App {
   };
 
   start = async () => {
+    // Middlewares
     this.#app.use(express.json());
+
+    // Set routes
     this.#app.use("/", router);
 
+    // As the test run in parallel we need to avoid port collision.
     if (process.env.NODE_ENV !== "test") {
       const port = process.env.EXPRESS_PORT;
       this.#app.listen(port, () => {

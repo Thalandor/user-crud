@@ -19,22 +19,26 @@ router.post(
   ...validate(createSchema),
   UserController.create
 );
+
 router.get(
   "/users/:id",
   validateToken,
   ...validate(readSchema),
   UserController.read
 );
+
 router.patch(
   "/users/:id",
   validateToken,
   ...validate(updateSchema),
   UserController.update
 );
+
 router.delete(
   "/users/:id",
   validateToken,
   ...validate(removeSchema),
   UserController.remove
 );
+
 router.post("/login", ...validate(loginSchema), TokenController.Login);
