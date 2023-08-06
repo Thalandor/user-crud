@@ -13,7 +13,7 @@ export const validateToken = (
   }
 
   try {
-    jwt.verify(token, process.env.JWT_SECRET_KEY) as { userId: string };
+    jwt.verify(token, process.env.JWT_SECRET_KEY);
     next();
   } catch (error) {
     return res.status(401).json({ errors: "Unauthorized. Invalid token." });
