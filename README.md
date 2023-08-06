@@ -1,3 +1,11 @@
+# Quick start
+
+- Install dependencies with `npm i`
+- Start your database instance or start the one in the docker compose with `docker compose up -d`
+- Create a .env file on the root using .env.example as a base. If you are using the docker compose file you can use the example values from the table 'Environment variables' below.
+- Run the project with `npm run dev`
+- Or run the tests with `npm run test`
+
 # Prerequisites
 
 ## Packages installation
@@ -22,7 +30,7 @@ This repository use some environment variables to be able to work properly. Crea
 ## Database
 
 Last but not least ensure you have the database server started. To facilitate this, a docker compose file has been created to start an instance of a PostgreSQL database in case you have docker installed on your computer. Write the following command to start the dockerized instance.
-`docker compose up`
+`docker compose up -d`
 
 This command not only starts a postgres database, but also inserts a user directly so the user can start to work directly with the API.
 
@@ -120,3 +128,9 @@ Returns (JSON)
 Some tests using jest have been generated to test the api. You can run the following command to execute them:
 
     npm run test
+
+# Start
+
+Execute the project running the following command:
+
+    npm run dev
