@@ -2,8 +2,12 @@
 
 - Install dependencies with `npm i`
 - Start your database instance or start the one in the docker compose with `docker compose up -d`
-- Create a .env file on the root using .env.example as a base. If you are using the docker compose file you can use the example values from the table 'Environment variables' below.
+- Create a .env file on the root using .env.example as a base. If you are using the docker compose file you can use the example values from the table 'Environment variables' below (Recommended).
+- Ensure you have a valid user already created on the database(automatically done on the previous step if using docker compose) or use:
+  `INSERT INTO users (name, email, password) VALUES ('admin', 'admin@admin.com','$2b$10$PqLV.OPh6p.GAqoUP7g0X.DhRWPPtirlhaU7uWjkvED9rMovFtsd2');`
+  The actual credentials for this user are 'admin@admin.com' and 'password1'
 - Run the project with `npm run dev`
+  - Call the /login endpoint to get a token and use it as a bearer token to call the other endpoints
 - Or run the tests with `npm run test`
 
 # Prerequisites
