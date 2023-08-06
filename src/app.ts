@@ -20,7 +20,8 @@ export default class App {
     // Set routes
     this.#app.use("/", router);
 
-    // As the test run in parallel we need to avoid port collision.
+    // DB Connection is not needed on the tests
+    // Also, as the test run in parallel we need to avoid port collision with the use of .listen.
     if (process.env.NODE_ENV !== "test") {
       try {
         await db.connect();
