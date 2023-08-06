@@ -22,20 +22,18 @@ export default class App {
 
     // As the test run in parallel we need to avoid port collision.
     if (process.env.NODE_ENV !== "test") {
-      db.connect()
-        .then(() => {
-          console.log("Connected to the database.");
-          const port = process.env.EXPRESS_PORT;
-
-          this.#app.listen(port, () => {
-            return console.log(
-              `Express server is listening at http://localhost:${port} 🚀`
-            );
-          });
-        })
-        .catch((error) => {
-          console.error("Error connecting to the database:", error);
+      try {
+        await db.connect();
+        console.log("Connected to the database.");
+        const port = process.env.EXPRESS_PORT;
+        this.#app.listen(port, () => {
+          return console.log(
+            `Express server is listening at http://localhost:${port} 🚀`
+          );
         });
+      } catch (error) {
+        console.error("Error connecting to the database:", error);
+      }
     }
   };
 }
